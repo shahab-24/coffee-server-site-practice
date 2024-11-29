@@ -31,6 +31,34 @@ async function run() {
       const newCoffee = await coffeeCollection.find().toArray();
       res.send(newCoffee);
     });
+
+    app.get("/coffee/:id", async(req, res) => {
+        const id = req.params.id;
+        const query = {_id : new ObjectId(id)};
+        const result = await coffeeCollection.findOne(query);
+        res.send(result)
+    })
+    app.put("/updateCoffee/:id", async(req, res) => {
+        const id = req.params.id;
+        const query = {_id : new ObjectId(id)};
+        const options = {upsert : true}
+        const coffee = req.body;
+        const updatedCoffee = {
+            $set: {
+                 name:coffee.name,
+                 photo: coffee.photo, 
+                 chef: coffee.chef, 
+                 category: coffee.category, 
+                 supplier: coffee.supplier, 
+                 test: coffee.test 
+            }
+        }
+        const result = await coffeeCollection.updateOne(query,updatedCoffee, options,);
+        res.send(result)
+    })
+
+
+
     app.post("/addCoffee", async (req, res) => {
       const coffee = req.body;
       const newCoffee = await coffeeCollection.insertOne(coffee);
